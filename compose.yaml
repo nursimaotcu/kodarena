@@ -1,0 +1,19 @@
+services:
+  api:
+    build: .
+    environment:
+      ARENA_API_KEY: ${ARENA_API_KEY:?Run python scripts/setup.py first}
+      ARENA_WORKER_KEY: ${ARENA_WORKER_KEY:?Run python scripts/setup.py first}
+      ARENA_DB: /app/data/arena.db
+    ports:
+      - "127.0.0.1:5200:5200"
+    volumes:
+      - arena-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  arena-data:

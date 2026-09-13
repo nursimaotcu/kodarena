@@ -1,0 +1,29 @@
+@base = http://127.0.0.1:5200
+@apiKey = REPLACE_LOCALLY_DO_NOT_COMMIT
+
+### Public health
+GET {{base}}/health
+
+### Problem catalog, excludes hidden tests
+GET {{base}}/api/problems
+Authorization: Bearer {{apiKey}}
+
+### Reuse this key only for an identical retry
+POST {{base}}/api/submissions
+Authorization: Bearer {{apiKey}}
+Idempotency-Key: example-request-0001
+Content-Type: application/json
+
+{
+  "problem_id": "pair-sum",
+  "language": "python",
+  "source": "print(sum(map(int,input().split())))"
+}
+
+### Queue
+GET {{base}}/api/submissions
+Authorization: Bearer {{apiKey}}
+
+### Replay events from a known cursor
+GET {{base}}/api/events?after=0
+Authorization: Bearer {{apiKey}}

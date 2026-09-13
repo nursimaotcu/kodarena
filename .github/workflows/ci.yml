@@ -1,0 +1,43 @@
+name: Tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check .
+      - run: ruff format --check arena scripts tests
+      - run: pytest -q
+      - run: node --check static/app.js
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ARENA_API_KEY: ci-only-user-key-000000000000000000000
+      ARENA_WORKER_KEY: ci-only-worker-key-000000000000000000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-dev.txt
+      - run: docker pull python:3.12-slim && docker pull node:22-slim
+      - run: ARENA_DOCKER_TESTS=1 pytest tests/test_docker.py -q
+      - run: docker compose up --build --wait
+      - name: Start worker and exercise real HTTP
+        shell: bash
+        run: |
+          python -m arena.worker > worker.log 2>&1 &
+          worker_pid=$!
+          trap 'kill "$worker_pid" 2>/dev/null || true' EXIT
+          python scripts/smoke.py
+      - name: Stop API
+        if: always()
+        run: docker compose down

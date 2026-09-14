@@ -1,5 +1,7 @@
 # KodArena
 
+[![CI](https://github.com/nursimaotcu/kodarena/actions/workflows/ci.yml/badge.svg)](https://github.com/nursimaotcu/kodarena/actions/workflows/ci.yml)
+
 Python ve JavaScript çözümlerini test eden, iş kuyruğu ve ayrı çalıştırıcıları olan bir kod değerlendirme uygulaması.
 
 KodArena'da odak noktam, bir çözümün doğru çıktı üretmesi kadar arka plandaki işin güvenilir biçimde tamamlanması. Worker kapanırsa iş yeniden sıraya giriyor; eski worker'ın geç gelen sonucu kabul edilmiyor. Aynı isteğin tekrar gönderilmesi ikinci bir iş oluşturmuyor.
@@ -95,6 +97,8 @@ Compose yalnızca API'yi başlatır; worker host üzerinde ayrı süreçtir. Bö
 5. Worker'ı bir iş devam ederken kapat; başka worker açık kalsın: 30 saniyelik lease dolunca iş yeniden alınır. En fazla üç deneme yapılır.
 
 İş **en az bir kez** çalıştırılabilir. Geçersiz lease ile gelen sonuç kabul edilmediği için yalnızca güncel denemenin sonucu kaydedilir. Bu, kodun tam olarak bir kez çalışacağı anlamına gelmez.
+
+Birim testleri, 8 gerçek Docker testi, image build ve API + worker uçtan uca kontrolü [GitHub Actions koşusunda](https://github.com/nursimaotcu/kodarena/actions/runs/34733784585) geçti.
 
 ## Testler
 
